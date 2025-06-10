@@ -27,6 +27,7 @@ import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.analysis.IBundleCoverage;
 import org.jacoco.core.analysis.IClassCoverage;
 import org.jacoco.core.data.ExecutionDataStore;
+import org.jacoco.core.internal.diff.JsonReadUtil;
 import org.jacoco.core.tools.ExecFileLoader;
 import org.jacoco.report.DirectorySourceFileLocator;
 import org.jacoco.report.FileMultiReportOutput;
@@ -72,6 +73,12 @@ public class Report extends Command {
 	@Option(name = "--html", usage = "output directory for the HTML report", metaVar = "<dir>")
 	File html;
 
+	@Option(name = "--diffCode", usage = "input String for diff", metaVar = "<file>")
+	String diffCode;
+
+	@Option(name = "--diffCodeFiles", usage = "input file for diff", metaVar = "<path>")
+	String diffCodeFiles;
+
 	@Override
 	public String description() {
 		return "Generate reports in different formats by reading exec and Java class files.";
@@ -104,7 +111,16 @@ public class Report extends Command {
 
 	private IBundleCoverage analyze(final ExecutionDataStore data,
 			final PrintWriter out) throws IOException {
-		final CoverageBuilder builder = new CoverageBuilder();
+		CoverageBuilder builder;
+		// 读取json文件
+		if (null != this.diffCodeFiles) {
+			builder = new CoverageBuilder(
+					JsonReadUtil.readJsonToString(this.diffCodeFiles));
+		} else if (null != this.diffCode) {
+			builder = new CoverageBuilder(this.diffCode);
+		} else {
+			builder = new CoverageBuilder();
+		}
 		final Analyzer analyzer = new Analyzer(data, builder);
 		for (final File f : classfiles) {
 			analyzer.analyzeAll(f);

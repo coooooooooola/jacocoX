@@ -21,6 +21,7 @@ import org.jacoco.core.analysis.IBundleCoverage;
 import org.jacoco.core.analysis.ICoverageNode.CounterEntity;
 import org.jacoco.core.data.ExecutionData;
 import org.jacoco.core.data.SessionInfo;
+import org.jacoco.core.internal.diff.ClassInfoDto;
 import org.jacoco.report.ILanguageNames;
 import org.jacoco.report.IMultiReportOutput;
 import org.jacoco.report.IReportGroupVisitor;
@@ -65,11 +66,17 @@ public class HTMLFormatter implements IHTMLReportContext {
 
 	private Table table;
 
+	List<ClassInfoDto> classInfos;
+
 	/**
 	 * New instance with default settings.
 	 */
 	public HTMLFormatter() {
 	}
+
+	public HTMLFormatter(List<ClassInfoDto> classInfos) {
+		/*  75 */     this.classInfos = classInfos;
+		/*     */   }
 
 	/**
 	 * Sets the implementation for language name display. Java language names

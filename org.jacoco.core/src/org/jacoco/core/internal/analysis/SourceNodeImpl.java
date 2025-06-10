@@ -16,6 +16,9 @@ import org.jacoco.core.analysis.CoverageNodeImpl;
 import org.jacoco.core.analysis.ICounter;
 import org.jacoco.core.analysis.ILine;
 import org.jacoco.core.analysis.ISourceNode;
+import org.jacoco.core.internal.diff.ChangeLineDto;
+
+import java.util.List;
 
 /**
  * Implementation of {@link ISourceNode}.
@@ -26,6 +29,8 @@ public class SourceNodeImpl extends CoverageNodeImpl implements ISourceNode {
 
 	/** first line number in {@link #lines} */
 	private int offset;
+
+	private List<ChangeLineDto> changeLinesInfo;
 
 	/**
 	 * Create a new source node implementation instance.
@@ -202,6 +207,14 @@ public class SourceNodeImpl extends CoverageNodeImpl implements ISourceNode {
 		}
 		final LineImpl line = lines[nr - offset];
 		return line == null ? LineImpl.EMPTY : line;
+	}
+
+	public List<ChangeLineDto> getChangeLinesInfo() {
+		return this.changeLinesInfo;
+	}
+
+	public void setChangeLinesInfo(List<ChangeLineDto> changeLinesInfo) {
+		this.changeLinesInfo = changeLinesInfo;
 	}
 
 }

@@ -13,10 +13,12 @@
 package org.jacoco.report.internal.html.page;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.jacoco.core.analysis.IBundleCoverage;
 import org.jacoco.core.analysis.ICoverageNode;
 import org.jacoco.core.analysis.IPackageCoverage;
+import org.jacoco.core.internal.diff.ClassInfoDto;
 import org.jacoco.report.ISourceFileLocator;
 import org.jacoco.report.internal.ReportOutputFolder;
 import org.jacoco.report.internal.html.HTMLElement;
@@ -31,6 +33,8 @@ public class BundlePage extends TablePage<ICoverageNode> {
 	private final ISourceFileLocator locator;
 
 	private IBundleCoverage bundle;
+
+	private List<ClassInfoDto> classInfos;
 
 	/**
 	 * Creates a new visitor in the given context.

@@ -154,11 +154,17 @@
     <!-- See http://jira.codehaus.org/browse/SONAR-2096 -->
     <sonar.java.source>1.5</sonar.java.source>
     <sonar.java.target>1.5</sonar.java.target>
+    <gson.version>2.9.0</gson.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
       <!-- Project dependencies -->
+      <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>${gson.version}</version>
+      </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>org.jacoco.core</artifactId>
