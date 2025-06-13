@@ -75,8 +75,8 @@ public class HTMLFormatter implements IHTMLReportContext {
 	}
 
 	public HTMLFormatter(List<ClassInfoDto> classInfos) {
-		/*  75 */     this.classInfos = classInfos;
-		/*     */   }
+		/* 75 */ this.classInfos = classInfos;
+		/*     */ }
 
 	/**
 	 * Sets the implementation for language name display. Java language names

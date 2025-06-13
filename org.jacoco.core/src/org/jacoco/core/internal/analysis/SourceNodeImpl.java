@@ -12,13 +12,13 @@
  *******************************************************************************/
 package org.jacoco.core.internal.analysis;
 
+import java.util.List;
+
 import org.jacoco.core.analysis.CoverageNodeImpl;
 import org.jacoco.core.analysis.ICounter;
 import org.jacoco.core.analysis.ILine;
 import org.jacoco.core.analysis.ISourceNode;
 import org.jacoco.core.internal.diff.ChangeLineDto;
-
-import java.util.List;
 
 /**
  * Implementation of {@link ISourceNode}.

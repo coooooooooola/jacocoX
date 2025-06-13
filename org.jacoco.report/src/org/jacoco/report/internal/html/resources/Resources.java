@@ -115,6 +115,8 @@ public class Resources {
 		copyResource("branchfc.gif");
 		copyResource("branchnc.gif");
 		copyResource("branchpc.gif");
+		copyResource("line-add.png");
+		copyResource("line-edit.png");
 		copyResource(REDBAR);
 		copyResource(GREENBAR);
 		copyResource(PRETTIFY_STYLESHEET);

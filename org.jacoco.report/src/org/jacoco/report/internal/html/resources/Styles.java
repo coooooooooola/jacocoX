@@ -98,6 +98,10 @@ public final class Styles {
 	/** Part of source code where branches are fully covered */
 	public static final String BRANCH_FULLY_COVERED = "bfc";
 
+	public static final String LINE_ADD = "line-add";
+
+	public static final String LINE_EDIT = "line-edit";
+
 	/**
 	 * Returns a combined style from the given styles.
 	 *

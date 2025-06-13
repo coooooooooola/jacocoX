@@ -12,22 +12,16 @@
  *******************************************************************************/
 package org.jacoco.core.analysis;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import org.jacoco.core.internal.analysis.BundleCoverageImpl;
-import org.jacoco.core.internal.analysis.ClassCoverageImpl;
 import org.jacoco.core.internal.analysis.SourceFileCoverageImpl;
-import org.jacoco.core.internal.analysis.SourceNodeImpl;
 import org.jacoco.core.internal.diff.ChangeLineDto;
 import org.jacoco.core.internal.diff.ClassInfoDto;
 import org.jacoco.core.internal.diff.CodeDiffUtil;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Builder for hierarchical {@link ICoverageNode} structures from single
@@ -45,160 +39,140 @@ import org.jacoco.core.internal.diff.CodeDiffUtil;
  */
 public class CoverageBuilder implements ICoverageVisitor {
 
-    private final Map<String, IClassCoverage> classes;
+	private final Map<String, IClassCoverage> classes;
 
-    private Map<String, ISourceFileCoverage> sourcefiles;
-    /**
-     * 已处理增量信息
-     */
-    public List<ClassInfoDto> classInfos;
+	private final Map<String, ISourceFileCoverage> sourcefiles;
 
+	/**
+	 * 新增代码类
+	 */
+	public List<ClassInfoDto> classInfos;
 
-    /**
-     * Create a new builder.
-     */
-    public CoverageBuilder() {
-        this.classes = new HashMap<String, IClassCoverage>();
-        this.sourcefiles = new HashMap<String, ISourceFileCoverage>();
-    }
+	/**
+	 * Create a new builder.
+	 */
+	public CoverageBuilder() {
+		this.classes = new HashMap<String, IClassCoverage>();
+		this.sourcefiles = new HashMap<String, ISourceFileCoverage>();
+	}
 
-    public CoverageBuilder(String classList) {
-        this.classes = new HashMap<String, IClassCoverage>();
-        this.sourcefiles = new HashMap<String, ISourceFileCoverage>();
-        if (null != classList && !"".equals(classList)) {
-            Gson gson = new Gson();
-            classInfos = gson.fromJson(classList,
-                    new TypeToken<List<ClassInfoDto>>() {
-                    }.getType());
-        }
-    }
+	public CoverageBuilder(String classList) {
+		this.classes = new HashMap<String, IClassCoverage>();
+		this.sourcefiles = new HashMap<String, ISourceFileCoverage>();
+		if (null != classList && !"".equals(classList)) {
+			Gson gson = new Gson();
+			classInfos = gson.fromJson(classList,
+					new TypeToken<List<ClassInfoDto>>() {
+					}.getType());
+		}
+	}
 
-    public List<ClassInfoDto> getClassInfos() {
-        return classInfos;
-    }
+	public List<ClassInfoDto> getClassInfos() {
+		return classInfos;
+	}
 
-    public void setClassInfos(List<ClassInfoDto> classInfos) {
-        this.classInfos = classInfos;
-    }
-    /**
-     * Returns all class nodes currently contained in this builder.
-     *
-     * @return all class nodes
-     */
-    public Collection<IClassCoverage> getClasses() {
-        build();
-        return Collections.unmodifiableCollection(classes.values());
-    }
+	public void setClassInfos(List<ClassInfoDto> classInfos) {
+		this.classInfos = classInfos;
+	}
 
-    /**
-     * Returns all source file nodes currently contained in this builder.
-     *
-     * @return all source file nodes
-     */
-    public Collection<ISourceFileCoverage> getSourceFiles() {
-        build();
-        return Collections.unmodifiableCollection(sourcefiles.values());
-    }
+	/**
+	 * Returns all class nodes currently contained in this builder.
+	 *
+	 * @return all class nodes
+	 */
+	public Collection<IClassCoverage> getClasses() {
+		return Collections.unmodifiableCollection(classes.values());
+	}
 
-    /**
-     * Creates a bundle from all nodes currently contained in this bundle.
-     *
-     * @param name Name of the bundle
-     * @return bundle containing all classes and source files
-     */
-    public IBundleCoverage getBundle(final String name) {
-        build();
-        return new BundleCoverageImpl(name, classes.values(),
-                sourcefiles.values());
-    }
+	/**
+	 * Returns all source file nodes currently contained in this builder.
+	 *
+	 * @return all source file nodes
+	 */
+	public Collection<ISourceFileCoverage> getSourceFiles() {
+		return Collections.unmodifiableCollection(sourcefiles.values());
+	}
 
-    /**
-     * Returns all classes for which execution data does not match.
-     *
-     * @return collection of classes with non-matching execution data
-     * @see IClassCoverage#isNoMatch()
-     */
-    public Collection<IClassCoverage> getNoMatchClasses() {
-        final Collection<IClassCoverage> result = new ArrayList<IClassCoverage>();
-        for (final IClassCoverage c : classes.values()) {
-            if (c.isNoMatch()) {
-                result.add(c);
-            }
-        }
-        return result;
-    }
+	/**
+	 * Creates a bundle from all nodes currently contained in this bundle.
+	 *
+	 * @param name
+	 *            Name of the bundle
+	 * @return bundle containing all classes and source files
+	 */
+	public IBundleCoverage getBundle(final String name) {
+		return new BundleCoverageImpl(name, classes.values(),
+				sourcefiles.values());
+	}
 
-    private void build() {
-        if (sourcefiles != null) {
-            return;
-        }
-        this.sourcefiles = new HashMap<String, ISourceFileCoverage>();
-        for (final IClassCoverage c : classes.values()) {
-            for (final SourceNodeImpl fragment : ((ClassCoverageImpl) c)
-                    .getFragments()) {
-                final SourceNodeImpl classCoverage = (SourceNodeImpl) classes
-                        .get(fragment.getName());
-                if (classCoverage != null) {
-                    classCoverage.applyFragment(fragment);
-                }
-            }
-        }
-        for (final IClassCoverage coverage : classes.values()) {
-            final String source = coverage.getSourceFileName();
-            if (source != null) {
-                final SourceFileCoverageImpl sourceFile = getSourceFile(source,
-                        coverage.getPackageName());
-                sourceFile.increment(coverage);
-            }
-        }
-    }
+	/**
+	 * Returns all classes for which execution data does not match.
+	 *
+	 * @return collection of classes with non-matching execution data
+	 * @see IClassCoverage#isNoMatch()
+	 */
+	public Collection<IClassCoverage> getNoMatchClasses() {
+		final Collection<IClassCoverage> result = new ArrayList<IClassCoverage>();
+		for (final IClassCoverage c : classes.values()) {
+			if (c.isNoMatch()) {
+				result.add(c);
+			}
+		}
+		return result;
+	}
 
-    // === ICoverageVisitor ===
+	// === ICoverageVisitor ===
 
-    public void visitCoverage(final IClassCoverage coverage) {
-        sourcefiles = null;
-        final String name = coverage.getName();
-        final IClassCoverage dup = classes.put(name, coverage);
-        if (dup != null) {
-            if (dup.getId() != coverage.getId()) {
-                throw new IllegalStateException(
-                        "Can't add different class with same name: " + name);
-            }
-        } else {
-            final String source = coverage.getSourceFileName();
-            if (source != null) {
-                final SourceFileCoverageImpl sourceFile = getSourceFile(source,
-                        coverage.getPackageName());
-                sourceFile.increment(coverage);
+	public void visitCoverage(final IClassCoverage coverage) {
+		final String name = coverage.getName();
+		final IClassCoverage dup = classes.put(name, coverage);
+		if (dup != null) {
+			if (dup.getId() != coverage.getId()) {
+				throw new IllegalStateException(
+						"Can't add different class with same name: " + name);
+			}
+		} else {
+			final String source = coverage.getSourceFileName();
+			if (source != null) {
+				final SourceFileCoverageImpl sourceFile = getSourceFile(source,
+						coverage.getPackageName());
+				sourceFile.increment(coverage);
 
-                Boolean changeFlag = CodeDiffUtil.checkClassIn(coverage.getName(), this.classInfos);
-                if (changeFlag.booleanValue()) {
-                    ClassInfoDto classInfoDto = this.classInfos.stream().filter(c -> (coverage.getName().equals(c.getClassFile()) || coverage.getName().split("\\$")[0].equals(c.getClassFile()))).findFirst().orElse(null);
-                    if (null == classInfoDto) {
-                        return;
-                    }
+				Boolean changeFlag = CodeDiffUtil
+						.checkClassIn(coverage.getName(), this.classInfos);
+				if (changeFlag.booleanValue()) {
+					ClassInfoDto classInfoDto = this.classInfos.stream().filter(
+							c -> (coverage.getName().equals(c.getClassFile())
+									|| coverage.getName().split("\\$")[0]
+											.equals(c.getClassFile())))
+							.findFirst().orElse(null);
+					if (null == classInfoDto) {
+						return;
+					}
 
-                    // 增量信息注入到SourceFile
-                    List<ChangeLineDto> lines = classInfoDto.getLines();
-                    if (null == lines || lines.isEmpty() || coverage.getFirstLine() == -1) {
-                        return;
-                    }
-                    sourceFile.setChangeLinesInfo(lines);
-                }
-            }
-        }
-    }
+					// 行信息注入到SourceFile
+					List<ChangeLineDto> lines = classInfoDto.getLines();
+					if (null == lines || lines.isEmpty()
+							|| coverage.getFirstLine() == -1) {
+						return;
+					}
+					sourceFile.setChangeLinesInfo(lines);
 
-    private SourceFileCoverageImpl getSourceFile(final String filename,
-                                                 final String packagename) {
-        final String key = packagename + '/' + filename;
-        SourceFileCoverageImpl sourcefile = (SourceFileCoverageImpl) sourcefiles
-                .get(key);
-        if (sourcefile == null) {
-            sourcefile = new SourceFileCoverageImpl(filename, packagename);
-            sourcefiles.put(key, sourcefile);
-        }
-        return sourcefile;
-    }
+				}
+			}
+		}
+	}
+
+	private SourceFileCoverageImpl getSourceFile(final String filename,
+			final String packagename) {
+		final String key = packagename + '/' + filename;
+		SourceFileCoverageImpl sourcefile = (SourceFileCoverageImpl) sourcefiles
+				.get(key);
+		if (sourcefile == null) {
+			sourcefile = new SourceFileCoverageImpl(filename, packagename);
+			sourcefiles.put(key, sourcefile);
+		}
+		return sourcefile;
+	}
 
 }

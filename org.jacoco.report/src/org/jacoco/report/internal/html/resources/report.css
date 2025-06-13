@@ -135,6 +135,26 @@ pre.source span.bpc:hover {
   background-color:#ffff80;
 }
 
+pre.source span.line-add {
+  background-image: url(line-add.png);
+  background-repeat: no-repeat;
+  background-position: center center;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 15px;
+}
+
+pre.source span.line-edit {
+  background-image: url(line-edit.png);
+  background-repeat: no-repeat;
+  background-position: center center;
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-left: 15px;
+}
+
 table.coverage {
   empty-cells:show;
   border-collapse:collapse;
